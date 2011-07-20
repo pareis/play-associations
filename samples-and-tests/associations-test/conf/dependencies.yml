@@ -3,3 +3,22 @@
 require:
     - play
     - play -> associations 0.1
+
+
+repositories:
+    - playModules:
+         type:     chain
+         using:
+              - localrepo:
+                   type:       local
+                   descriptor: ${application.path}/../../../[module]/conf/dependencies.yml
+                   artifact:   ${application.path}/../../../[module]
+                   contains:
+                        - play -> associations
+
+              - playLocalModules:
+                   type:       local
+                   descriptor: "${play.path}/modules/[module]-[revision]/conf/dependencies.yml"
+                   artifact:   "${play.path}/modules/[module]-[revision]"
+                   contains:
+                        - play -> *
