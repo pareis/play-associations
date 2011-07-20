@@ -18,8 +18,8 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
         delegate().add(t);
     }
 
-    private void linkOpposite(T anElement) {
-        ref().opposite().link(anElement, owner());
+    private void linkOpposite(T t) {
+        ref().opposite().link(t, owner());
     }
 
 
@@ -28,8 +28,8 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
         delegate().remove(t);
     }
 
-    private void unlinkOpposite(T current) {
-        ref().opposite().unlink(current, owner());
+    private void unlinkOpposite(T t) {
+        ref().opposite().unlink(t, owner());
     }
 
 
@@ -54,11 +54,11 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
 
 
-    public boolean addAll(Collection<? extends T> aCollection) {
-        for (Iterator<? extends T> i = aCollection.iterator(); i.hasNext();) {
+    public boolean addAll(Collection<? extends T> collection) {
+        for (Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
             add(i.next());
         }
-        return aCollection.size() > 0;
+        return collection.size() > 0;
     }
 
 
@@ -70,12 +70,12 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
     }
 
 
-    public boolean contains(Object anObject) {
-        return delegate().contains(anObject);
+    public boolean contains(Object object) {
+        return delegate().contains(object);
     }
 
-    public boolean containsAll(Collection<?> aCollection) {
-        for(Object o : aCollection) {
+    public boolean containsAll(Collection<?> collection) {
+        for(Object o : collection) {
             if(!contains(o)) {
                 return false;
             }
@@ -83,11 +83,11 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
         return true;
     }
 
-    public boolean equals(Object anObject) {
-        if(anObject instanceof AssociativeSet<?>) {
-            return delegate().equals(((AssociativeSet)anObject).delegate());
+    public boolean equals(Object object) {
+        if(object instanceof AssociativeSet<?>) {
+            return delegate().equals(((AssociativeSet)object).delegate());
         } else {
-            return this == anObject;
+            return this == object;
         }
     }
 
@@ -147,32 +147,32 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
 
     @SuppressWarnings("unchecked")
-    public boolean remove(Object anObject) {
+    public boolean remove(Object object) {
         Set<T> del = delegate();
         int size = del.size();
-        if(del.contains(anObject)) {
-            unlink((T)anObject);
-            unlinkOpposite((T)anObject);
+        if(del.contains(object)) {
+            unlink((T)object);
+            unlinkOpposite((T)object);
             return del.size()!=size;
         }
 
         return false;
     }
 
-    public boolean removeAll(Collection<?> aCollection) {
+    public boolean removeAll(Collection<?> collection) {
         boolean changed = false;
-        for (Iterator<?> i = aCollection.iterator(); i.hasNext();) {
+        for (Iterator<?> i = collection.iterator(); i.hasNext();) {
             changed = changed || remove(i.next());
         }
         return changed;
     }
 
-    public boolean retainAll(Collection<?> aCollection) {
+    public boolean retainAll(Collection<?> collection) {
         boolean changed = false;
         Set<T> del = delegate();
         Set<T> copy = new HashSet<T>(del);
         for (T t : copy) {
-            if (!aCollection.contains(t)) {
+            if (!collection.contains(t)) {
                 remove(t);
                 changed = true;
             }

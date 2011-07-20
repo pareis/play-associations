@@ -21,16 +21,16 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         link(t, -1);
     }
 
-    public void link(T anElement, int position) {
+    public void link(T t, int position) {
         if(position<0) {
-            delegate().add(anElement);
+            delegate().add(t);
         } else {
-            delegate().add(position, anElement);
+            delegate().add(position, t);
         }
     }
 
-    private void linkOpposite(T anElement) {
-        ref().opposite().link(anElement, owner());
+    private void linkOpposite(T t) {
+        ref().opposite().link(t, owner());
     }
 
 
@@ -39,14 +39,14 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         unlink(t, -1);
     }
 
-    public void unlink(T anElement, int position) {
+    public void unlink(T t, int position) {
         if(position<0) {
-            delegate().remove(anElement);
+            delegate().remove(t);
         } else {
-            if(position< delegate().size() && delegate().get(position)==anElement) {
+            if(position< delegate().size() && delegate().get(position)==t) {
                 delegate().remove(position);
             } else {
-                delegate().remove(anElement);
+                delegate().remove(t);
             }
         }
     }
@@ -58,19 +58,19 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
 
-    public T set(int anIndex, T anElement) {
-        if(anElement==null) {
-            return remove(anIndex);
+    public T set(int index, T t) {
+        if(t==null) {
+            return remove(index);
         } else {
-            T current = get(anIndex);
-            if(current!=anElement) {
-                unlink(current, anIndex);
+            T current = get(index);
+            if(current!=t) {
+                unlink(current, index);
                 unlinkOpposite(current);
                 if(!ref().opposite().isCollection()) {
-                    ref().opposite().set(anElement, null);
+                    ref().opposite().set(t, null);
                 }
-                link(anElement, anIndex);
-                linkOpposite(anElement);
+                link(t, index);
+                linkOpposite(t);
             }
             return current;
         }
@@ -78,9 +78,9 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
 
-    public T remove(int anIndex) {
-        T o = get(anIndex);
-        unlink(o, anIndex);
+    public T remove(int index) {
+        T o = get(index);
+        unlink(o, index);
         unlinkOpposite(o);
         return o;
     }
@@ -111,19 +111,18 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
 
-    public boolean addAll(Collection<? extends T> aCollection) {
-        for (java.util.Iterator<? extends T> i = aCollection.iterator(); i.hasNext();) {
+    public boolean addAll(Collection<? extends T> collection) {
+        for (java.util.Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
             add(i.next());
         }
-        return aCollection.size() > 0;
+        return collection.size() > 0;
     }
 
-    public boolean addAll(int anIndex, Collection<? extends T> aColl) {
-        int index = anIndex;
-        for (java.util.Iterator<? extends T> i = aColl.iterator(); i.hasNext();) {
+    public boolean addAll(int index, Collection<? extends T> collection) {
+        for (java.util.Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
             add(index++, i.next());
         }
-        return aColl.size() > 0;
+        return collection.size() > 0;
     }
 
     public void clear() {
@@ -134,12 +133,12 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
 
-    public boolean contains(Object anObject) {
-        return indexOf(anObject) >= 0;
+    public boolean contains(Object object) {
+        return indexOf(object) >= 0;
     }
 
-    public boolean containsAll(Collection<?> aCollection) {
-        for(Object o : aCollection) {
+    public boolean containsAll(Collection<?> collection) {
+        for(Object o : collection) {
             if(!contains(o)) {
                 return false;
             }
@@ -147,9 +146,9 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         return true;
     }
 
-    public boolean equals(Object anObject) {
-        if(anObject instanceof AssociativeList<?>) {
-            AssociativeList<?> other = (AssociativeList<?>) anObject;
+    public boolean equals(Object object) {
+        if(object instanceof AssociativeList<?>) {
+            AssociativeList<?> other = (AssociativeList<?>) object;
             if(size()!=other.size() || owner()!=other.owner() || ref()!=other.ref()) return false;
             List<T> del = delegate();
             for (int i = 0, size = del.size(); i < size; i++) {
@@ -157,14 +156,14 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
             }
             return true;
         } else {
-            return this == anObject;
+            return this == object;
         }
     }
 
 
 
-    public T get(int anIndex) {
-        return delegate().get(anIndex);
+    public T get(int index) {
+        return delegate().get(index);
     }
 
 
@@ -172,8 +171,8 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         return delegate().hashCode();
     }
 
-    public int indexOf(Object anObject) {
-        return delegate().indexOf(anObject);
+    public int indexOf(Object object) {
+        return delegate().indexOf(object);
     }
 
     public boolean isEmpty() {
@@ -184,8 +183,8 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         return new Iter();
     }
 
-    public int lastIndexOf(Object anObject) {
-        return delegate().lastIndexOf(anObject);
+    public int lastIndexOf(Object object) {
+        return delegate().lastIndexOf(object);
     }
 
     public List<T> delegate() {
@@ -204,16 +203,8 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
     private class Iter implements Iterator<T> {
 
-        /**
-         * Index of element to be returned by subsequent call to next.
-         */
         int cursor = 0;
-
-        /**
-         * Index of element returned by most recent call to next or previous.
-         * Reset to -1 if this element is deleted by a call to remove.
-         */
-        int lastRet = -1;
+        int last = -1;
 
         public boolean hasNext() {
             return cursor != size();
@@ -222,7 +213,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         public T next() {
             try {
                 T next = get(cursor);
-                lastRet = cursor++;
+                last = cursor++;
                 return next;
             } catch (IndexOutOfBoundsException e) {
                 throw new NoSuchElementException();
@@ -230,16 +221,16 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         }
 
         public void remove() {
-            if (lastRet == -1) {
+            if (last == -1) {
                 throw new IllegalStateException();
             }
 
             try {
-                AssociativeList.this.remove(lastRet);
-                if (lastRet < cursor) {
+                AssociativeList.this.remove(last);
+                if (last < cursor) {
                     cursor--;
                 }
-                lastRet = -1;
+                last = -1;
             } catch (IndexOutOfBoundsException e) {
                 throw new ConcurrentModificationException();
             }
@@ -257,7 +248,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         public T previous() {
             int i = cursor - 1;
             T previous = get(i);
-            lastRet = i;
+            last = i;
             cursor = i;
             return previous;
         }
@@ -267,22 +258,22 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
         public int previousIndex() {
             return cursor - 1;
         }
-        public void set(T anE) {
-            if (lastRet == -1) {
+        public void set(T t) {
+            if (last == -1) {
                 throw new IllegalStateException();
             }
 
             try {
-                AssociativeList.this.set(lastRet, anE);
+                AssociativeList.this.set(last, t);
             } catch (IndexOutOfBoundsException e) {
                 throw new ConcurrentModificationException();
             }
         }
-        public void add(T anE) {
+        public void add(T t) {
 
             try {
-                AssociativeList.this.add(cursor++, anE);
-                lastRet = -1;
+                AssociativeList.this.add(cursor++, t);
+                last = -1;
             } catch (IndexOutOfBoundsException e) {
                 throw new ConcurrentModificationException();
             }
@@ -297,31 +288,31 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     @SuppressWarnings("unchecked")
-    public boolean remove(Object anObject) {
+    public boolean remove(Object object) {
         List<T> del = delegate();
         int size = del.size();
-        int index = indexOf(anObject);
+        int index = indexOf(object);
         if(index>=0) {
-            unlink((T)anObject, index);
-            unlinkOpposite((T)anObject);
+            unlink((T)object, index);
+            unlinkOpposite((T)object);
             return del.size()!=size;
         }
 
         return false;
     }
 
-    public boolean removeAll(Collection<?> aCollection) {
+    public boolean removeAll(Collection<?> collection) {
         boolean changed = false;
-        for (java.util.Iterator<?> i = aCollection.iterator(); i.hasNext();) {
+        for (java.util.Iterator<?> i = collection.iterator(); i.hasNext();) {
             changed = changed || remove(i.next());
         }
         return changed;
     }
-    public boolean retainAll(Collection<?> aCollection) {
+    public boolean retainAll(Collection<?> collection) {
         boolean changed = false;
         List<T> del = delegate();
         for (int i = del.size() - 1; i >= 0; i--) {
-            if (!aCollection.contains(del.get(i))) {
+            if (!collection.contains(del.get(i))) {
                 remove(i);
                 changed = true;
             }
@@ -331,7 +322,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     public int size() {
         return delegate().size();
     }
-    public List<T> subList(int aFromIndex, int aToIndex) {
+    public List<T> subList(int from, int to) {
         // TODO: may be this can be supported?
         throw new UnsupportedOperationException();
     }
