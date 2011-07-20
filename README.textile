@@ -1,4 +1,4 @@
-h1. [autorels] Automatic bi-directional associations for play
+h1. [associations] Automatic bi-directional associations for play
 
 _Enhances all your model classes with automated bi-directional associations._
 
@@ -6,7 +6,7 @@ This module will automatically enhance all your bi-directional JPA associations 
 
 As usual in play, it works transparently behind the scenes, completely effortless for you.
 
-"https://github.com/pareis/autorels":https://github.com/pareis/autorels
+"https://github.com/pareis/associations":https://github.com/pareis/associations
 
 Distributed under "Apache 2.0 License":http://www.apache.org/licenses/LICENSE-2.0.html
 

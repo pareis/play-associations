@@ -1,4 +1,4 @@
-package pareis.autorels;
+package play.modules.associations;
 
 
 public abstract class AbstractAssociativeCollection<T> implements AssociativeCollection<T> {

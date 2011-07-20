@@ -1,4 +1,4 @@
-self: pareis -> autorels 0.1
+self: play -> associations 0.1
 
 require:
     - play

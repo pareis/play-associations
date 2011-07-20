@@ -1,11 +1,11 @@
-package pareis.autorels;
+package play.modules.associations;
 
 import play.PlayPlugin;
 import play.classloading.ApplicationClasses;
 
-public class AutorelsPlugin extends PlayPlugin {
+public class AssociationsPlugin extends PlayPlugin {
 
-    private AutorelsEnhancer enhancer = new AutorelsEnhancer();
+    private AssociationsEnhancer enhancer = new AssociationsEnhancer();
 
     public void enhance(ApplicationClasses.ApplicationClass applicationClass) throws Exception {
         enhancer.enhanceThisClass(applicationClass);

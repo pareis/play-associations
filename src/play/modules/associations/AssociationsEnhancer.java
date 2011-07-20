@@ -1,4 +1,4 @@
-package pareis.autorels;
+package play.modules.associations;
 
 import javassist.CtClass;
 import javassist.CtField;
@@ -29,10 +29,10 @@ import java.util.regex.Pattern;
  *
  * TODO: report Guillaime that getter does not have play enhancement annotation (only setter)
  */
-public class AutorelsEnhancer extends Enhancer {
+public class AssociationsEnhancer extends Enhancer {
 
     private static final String JAVAX_PERSISTENCE_ENTITY = "javax.persistence.Entity";
-    private static final String ENHANCER_NAME = AutorelsEnhancer.class.getName();
+    private static final String ENHANCER_NAME = AssociationsEnhancer.class.getName();
     private static final Pattern INFO_REGEX = Pattern.compile("Ljava/util/(List|Set)<L([^;]+);>;");
     private static final Pattern COLLECTION_REGEX = Pattern.compile("^java\\.util\\.(List|Set)$");
 
@@ -268,6 +268,6 @@ public class AutorelsEnhancer extends Enhancer {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface AutorelsPropertyAccessor {
+    public @interface AssociationsPropertyAccessor {
     }
 }

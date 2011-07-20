@@ -1,4 +1,4 @@
-package pareis.autorels;
+package play.modules.associations;
 
 import java.util.Collection;
 
