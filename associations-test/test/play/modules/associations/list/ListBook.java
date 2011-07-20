@@ -1,4 +1,4 @@
-package play.modules.associations;
+package play.modules.associations.list;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,17 +7,17 @@ import javax.persistence.ManyToOne;
 import java.util.List;
 
 @Entity
-public class Book {
+public class ListBook {
     @Id
     public String title;
 
     @ManyToMany(mappedBy = "books")
-    public List<Author> authors;
+    public List<ListAuthor> authors;
 
     @ManyToOne
-    public Library library;
+    public ListLibrary library;
 
-    public Book(String title) {
+    public ListBook(String title) {
         this.title = title;
     }
 

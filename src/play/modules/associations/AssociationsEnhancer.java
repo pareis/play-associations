@@ -122,8 +122,9 @@ public class AssociationsEnhancer extends Enhancer {
                     
                     if(ap.many) {
 
-                        CtField delegate = CtField.make("public transient " + AssociativeList.class.getName() + " _delegate_" + ctField.getName()
-                                + " = new " + AssociativeList.class.getName() + "(_ref_" + ctField.getName() + ", " + "this);", ctClass);
+                        Class<? extends AbstractAssociativeCollection> collectionClass = ap.list ? AssociativeList.class : AssociativeSet.class;
+                        CtField delegate = CtField.make("public transient " + collectionClass.getName() + " _delegate_" + ctField.getName()
+                                + " = new " + collectionClass.getName() + "(_ref_" + ctField.getName() + ", " + "this);", ctClass);
                         ctClass.addField(delegate);
                         Logger.info("%s added field %s", ctClass.getName(), delegate);
 

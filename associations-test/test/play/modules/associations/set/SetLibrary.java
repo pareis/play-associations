@@ -1,27 +1,27 @@
-package play.modules.associations;
+package play.modules.associations.set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import java.util.List;
+import java.util.Set;
 
 @Entity
-public class Library {
+public class SetLibrary {
     @Id
     public String name;
 
     @OneToMany
-    public List<Author> authors;
+    public Set<SetAuthor> authors;
 
     @OneToMany(mappedBy = "library")
-    public List<Book> books;
+    public Set<SetBook> books;
 
 
     @OneToOne
-    public Author director;
+    public SetAuthor director;
 
-    public Library(String name) {
+    public SetLibrary(String name) {
         this.name = name;
     }
 

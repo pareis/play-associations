@@ -1,17 +1,17 @@
-package play.modules.associations;
+package play.modules.associations.list;
 
 import org.junit.*;
 import play.test.*;
 
 
-public class AssociationsTest extends UnitTest {
+public class AssociationsListTest extends UnitTest {
 
     @Test
     public void oneToOne() {
-        Library l1 = new Library("l1");
-        Library l2 = new Library("l2");
-        Author a1 = new Author("a1");
-        Author a2 = new Author("a2");
+        ListLibrary l1 = new ListLibrary("l1");
+        ListLibrary l2 = new ListLibrary("l2");
+        ListAuthor a1 = new ListAuthor("a1");
+        ListAuthor a2 = new ListAuthor("a2");
 
         l1.director = a1;
         assertEquals(a1, l1.director);
@@ -37,11 +37,11 @@ public class AssociationsTest extends UnitTest {
 
     @Test
     public void oneToMany() {
-        Library l1 = new Library("l1");
-        Library l2 = new Library("l2");
-        Book b1 = new Book("b1");
-        Book b2 = new Book("b2");
-        Book b3 = new Book("b3");
+        ListLibrary l1 = new ListLibrary("l1");
+        ListLibrary l2 = new ListLibrary("l2");
+        ListBook b1 = new ListBook("b1");
+        ListBook b2 = new ListBook("b2");
+        ListBook b3 = new ListBook("b3");
 
 
         l1.books.add(b1);
@@ -86,11 +86,11 @@ public class AssociationsTest extends UnitTest {
 
     @Test
     public void manyToMany() {
-        Book b1 = new Book("b1");
-        Book b2 = new Book("b2");
-        Book b3 = new Book("b3");
+        ListBook b1 = new ListBook("b1");
+        ListBook b2 = new ListBook("b2");
+        ListBook b3 = new ListBook("b3");
 
-        Author a1 = new Author("a1");
+        ListAuthor a1 = new ListAuthor("a1");
 
         // link one book with one author
         b1.authors.add(a1);
@@ -108,7 +108,7 @@ public class AssociationsTest extends UnitTest {
 
         b1.authors.add(a1);
         assertTrue(a1.books.contains(b1) && b1.authors.contains(a1));
-        Author a2 = new Author("a2");
+        ListAuthor a2 = new ListAuthor("a2");
         a2.books.add(b1);
         assertEquals(2, b1.authors.size());
         assertEquals(1, a1.books.size());

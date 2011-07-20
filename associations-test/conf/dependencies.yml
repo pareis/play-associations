@@ -11,8 +11,8 @@ repositories:
          using:
               - localrepo:
                    type:       local
-                   descriptor: ${application.path}/../../../[module]/conf/dependencies.yml
-                   artifact:   ${application.path}/../../../[module]
+                   descriptor: ${application.path}/../../[module]/conf/dependencies.yml
+                   artifact:   ${application.path}/../../[module]
                    contains:
                         - play -> associations
 
