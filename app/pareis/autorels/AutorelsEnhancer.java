@@ -152,33 +152,39 @@ public class AutorelsEnhancer extends Enhancer {
     }
 
 
-    private AssociationProperty analyze(CtField ctField) throws NotFoundException, ClassNotFoundException {
-        AssociationProperty ap = scan(ctField);
-        if(ap!=null) {
+    private AssociationProperty analyze(CtField ctField) {
+        try {
+            AssociationProperty ap = scan(ctField);
+            if(ap!=null) {
 //            Logger.info("1 %s", ap);
-            if(ap.oppField==null) {
+                if(ap.oppField==null) {
 //                Logger.info("2.1 %s", ap);
-                for(CtField ofield : ap.type.getDeclaredFields()) {
-                    AssociationProperty oppp = scan(ofield);
+                    for(CtField ofield : ap.type.getDeclaredFields()) {
+                        AssociationProperty oppp = scan(ofield);
 //                    Logger.info("2.1.1 %s %s", ofield, oppp);
-                    if(oppp!=null && oppp.oppField == ctField) {
+                        if(oppp!=null && oppp.oppField == ctField) {
+                            ap.opposite = oppp;
+                            ap.oppField = oppp.field;
+                            oppp.opposite = ap;
+                            break;
+                        }
+                    }
+                } else {
+//                Logger.info("2.2 %s", ap);
+                    AssociationProperty oppp = scan(ap.oppField);
+//                Logger.info("2.2.1 %s %s", ap.oppField, oppp);
+                    if(oppp!=null && oppp.type == ctField.getDeclaringClass()) {
                         ap.opposite = oppp;
-                        ap.oppField = oppp.field;
                         oppp.opposite = ap;
-                        break;
+                        oppp.oppField = ap.field;
                     }
                 }
-            } else {
-//                Logger.info("2.2 %s", ap);
-                AssociationProperty oppp = scan(ap.oppField);
-//                Logger.info("2.2.1 %s %s", ap.oppField, oppp);
-                if(oppp!=null && oppp.type == ctField.getDeclaringClass()) {
-                    ap.opposite = oppp;
-                    oppp.opposite = ap;
-                    oppp.oppField = ap.field;
-                }
+                return ap.valid() && ap.opposite.valid() ? ap : null;
             }
-            return ap.valid() && ap.opposite.valid() ? ap : null;
+        } catch(NotFoundException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return null;
     }

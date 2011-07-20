@@ -155,6 +155,9 @@ public class Reference {
             Logger.info("%s set: '%s': %s => %s)", owner, fieldName, current, target);
             if(current != target) {
                 if(current!=null) {
+                    if(target!=null && !opposite().isCollection()) {
+                        opposite().set(target, null);
+                    }
                     opposite().unlink(current, owner);
                     current = null;
                 }
