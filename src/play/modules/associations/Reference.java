@@ -88,7 +88,10 @@ public class Reference {
                         raw = new ArrayList<Object>();
                     } else if(Set.class.isAssignableFrom(field().getType())) {
                         raw = new HashSet<Object>();
+                    } else {
+                        throw new IllegalArgumentException("unsupported field type " + field().getType());
                     }
+                    field().set(owner, raw);
                 }
 
                 AssociativeCollection del = (AssociativeCollection)delegate().get(owner);
@@ -96,7 +99,9 @@ public class Reference {
                     if(List.class.isAssignableFrom(field().getType())) {
                         del = new AssociativeList(this, owner);
                     } else if(Set.class.isAssignableFrom(field().getType())) {
-                        //del = new AssociativeSet<Object>(this, owner); // TODO complete all collections
+                        del = new AssociativeSet(this, owner);
+                    } else {
+                        throw new IllegalArgumentException("unsupported field type " + field().getType());
                     }
                 }
 
