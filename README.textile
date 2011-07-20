@@ -1,4 +1,4 @@
-h1. [autorels] Automatic bi-directional associations
+h1. [autorels] Automatic bi-directional associations for play
 
 _Enhances all your model classes with automated bi-directional associations._
 
