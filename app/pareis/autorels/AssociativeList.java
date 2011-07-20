@@ -2,6 +2,7 @@ package pareis.autorels;
 
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -200,7 +201,12 @@ public class AssociativeList<T> implements AssociativeCollection<T>, List<T> {
 
     public List<T> delegate() {
         try {
-            return (List<T>) ref().field().get(owner);
+            List<T> delegate = (List<T>) ref().field().get(owner);
+            if(delegate==null) {
+                delegate = new ArrayList();
+                ref().field().set(owner, delegate);
+            }
+            return delegate;
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
