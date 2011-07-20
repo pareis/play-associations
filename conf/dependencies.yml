@@ -1,0 +1,4 @@
+self: pareis -> autorels 0.1
+
+require:
+    - play
