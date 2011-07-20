@@ -1,7 +1,5 @@
 package play.modules.associations;
 
-import play.Logger;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -19,7 +17,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     public void link(T t) {
-        Logger.info(" AssociativeList.link %s %s --> %s", owner(), ref().field().getName(), t);
+//        Logger.info(" AssociativeList.link %s %s --> %s", owner(), ref().field().getName(), t);
         link(t, -1);
     }
     
@@ -37,7 +35,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 	
 
     public void unlink(T t) {
-        Logger.info(" AssociativeList.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
+//        Logger.info(" AssociativeList.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
         unlink(t, -1);
     }
 
