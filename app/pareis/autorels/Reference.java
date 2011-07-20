@@ -156,6 +156,7 @@ public class Reference {
             if(current != target) {
                 if(current!=null) {
                     if(target!=null && !opposite().isCollection()) {
+                        // break the association of the target with its current counterpart
                         opposite().set(target, null);
                     }
                     opposite().unlink(current, owner);

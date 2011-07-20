@@ -10,21 +10,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-public class AssociativeList<T> implements AssociativeCollection<T>, List<T> {
+public class AssociativeList<T> extends AbstractAssociativeCollection<T> implements List<T> {
 
-    private Reference reference;
-    public Reference ref() {
-        return reference;
-    }
 
-    private Object owner;
-    public Object owner() {
-        return owner;
-    }
 
     public AssociativeList(Reference reference, Object owner) {
-        this.reference = reference;
-        this.owner = owner;
+        super(reference, owner);
     }
 
     public void link(T t) {
@@ -201,10 +192,10 @@ public class AssociativeList<T> implements AssociativeCollection<T>, List<T> {
 
     public List<T> delegate() {
         try {
-            List<T> delegate = (List<T>) ref().field().get(owner);
+            List<T> delegate = (List<T>) ref().field().get(owner());
             if(delegate==null) {
                 delegate = new ArrayList();
-                ref().field().set(owner, delegate);
+                ref().field().set(owner(), delegate);
             }
             return delegate;
         } catch (IllegalAccessException e) {
