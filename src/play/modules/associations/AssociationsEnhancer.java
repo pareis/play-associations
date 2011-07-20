@@ -51,7 +51,7 @@ public class AssociationsEnhancer extends Enhancer {
         public String toString() {
             return field.getDeclaringClass().getName() + "." + field.getName() + ":" + type.getName() + "[" + (many ? "*" + (list ? "(List)" : "(Set)") : "1") + "]";
         }
-        
+
     }
 
     public void enhanceThisClass(ApplicationClass applicationClass) throws Exception {
@@ -119,7 +119,7 @@ public class AssociationsEnhancer extends Enhancer {
                             + qq(ap.oppField.getName()) + ");", ctClass);
                     ctClass.addField(reference);
                     Logger.info("%s added field %s", ctClass.getName(), reference);
-                    
+
                     if(ap.many) {
 
                         Class<? extends AbstractAssociativeCollection> collectionClass = ap.list ? AssociativeList.class : AssociativeSet.class;
