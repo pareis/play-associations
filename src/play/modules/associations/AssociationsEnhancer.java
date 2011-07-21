@@ -86,7 +86,7 @@ public class AssociationsEnhancer extends Enhancer {
                     if(ap==null) {
                         continue;
                     }
-                    Logger.info(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
+                    Logger.debug(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
 
 
                     String propertyName = ctField.getName().substring(0, 1).toUpperCase() + (ctField.getName().length()>1 ?ctField.getName().substring(1) : "");
@@ -98,7 +98,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtMethod ctMethodSet = ctClass.getDeclaredMethod(setter);
                         if(!ap.many) {
                             ctClass.removeMethod(ctMethodSet);
-                            Logger.info("removed current " + ctMethodSet);
+                            Logger.debug("removed current " + ctMethodSet);
                         }
                     } catch (NotFoundException noSetter) {
                     }
@@ -107,7 +107,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtMethod ctMethodGet = ctClass.getDeclaredMethod(getter);
                         if(ap.many) {
                             ctClass.removeMethod(ctMethodGet);
-                            Logger.info("removed current " + ctMethodGet);
+                            Logger.debug("removed current " + ctMethodGet);
                         }
                     } catch (NotFoundException noGetter) {
                     }
@@ -118,7 +118,7 @@ public class AssociationsEnhancer extends Enhancer {
                             + ap.oppField.getDeclaringClass().getName() + ".class, "
                             + qq(ap.oppField.getName()) + ");", ctClass);
                     ctClass.addField(reference);
-                    Logger.info("%s added field %s", ctClass.getName(), reference);
+                    Logger.debug("%s added field %s", ctClass.getName(), reference);
 
                     if(ap.many) {
 
@@ -126,7 +126,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtField delegate = CtField.make("public transient " + collectionClass.getName() + " _delegate_" + ctField.getName()
                                 + " = new " + collectionClass.getName() + "(_ref_" + ctField.getName() + ", " + "this);", ctClass);
                         ctClass.addField(delegate);
-                        Logger.info("%s added field %s", ctClass.getName(), delegate);
+                        Logger.debug("%s added field %s", ctClass.getName(), delegate);
 
                         CtMethod ctMethodGet = CtMethod.make("public " + ctField.getType().getName() + " " + getter + "() { return this." + " _delegate_" + ctField.getName() + "; }", ctClass);
                         ctClass.addMethod(ctMethodGet);
@@ -139,13 +139,13 @@ public class AssociationsEnhancer extends Enhancer {
 
                 }
 
+
             } catch (Exception e) {
                 Logger.error(e, "Error in " + ENHANCER_NAME);
                 throw new UnexpectedException("Error in " + ENHANCER_NAME, e);
             }
 
         }
-
 
         // Done.
         applicationClass.enhancedByteCode = ctClass.toBytecode();
