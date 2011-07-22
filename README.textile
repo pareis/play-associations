@@ -23,9 +23,8 @@ I have created a play module that does just that. Whenever you invoke one of the
 
 There are no dependencies introduced in your code. The module enhancer works on all @Entity classes having a "mappedBy" annotation. You do not need to declare anything else. The presence of the module is sufficient.
 
-You can check it out at https://github.com/pareis/play-associations and as soon as available in the play modules repository
-
-"https://github.com/pareis/associations":https://github.com/pareis/associations
+You can check it out at "https://github.com/pareis/associations":https://github.com/pareis/associations
+ and as soon as available in the play modules repository
 
 Distributed under "Apache 2.0 License":http://www.apache.org/licenses/LICENSE-2.0.html
 
