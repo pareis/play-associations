@@ -17,7 +17,7 @@ Wouldn't it be much easier if you could just write
 
 and the system handles all the wiring and rewiring for you? With the benefit of eliminating errors like "detached entity passed to persist" and such?
 
-I have created a play module that does just that. Whenever you invoke one of the operations that changes a part of the association, then the module completes this operation on all other affected parts. This includes not only the new target and its opposite reference, but it also manages to unlink a target object from its current associated object. All hassle free and safe.
+I have created a play module that does just that. Whenever you invoke one of the operations that changes a part of the association from whichever side, then the module completes this operation on all other affected parts. This includes not only the new target and its opposite reference, but it also manages to unlink a target object from its current associated object. All hassle free and safe. It works on <code>@OneToOne</code>, <code>@OneToMany</code> and <code>@ManyToMany</code> associations.
 
 There are no dependencies introduced in your code. The module enhancer works on all @Entity classes having a "mappedBy" annotation. You do not need to declare anything else. The presence of the module is sufficient.
 
