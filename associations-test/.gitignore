@@ -1,2 +1,5 @@
 test-result/
 /modules/
+*.iml
+*.ipr
+*.iws

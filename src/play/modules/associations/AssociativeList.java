@@ -1,5 +1,7 @@
 package play.modules.associations;
 
+import play.Logger;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -17,7 +19,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     public void link(T t) {
-//        Logger.info(" AssociativeList.link %s %s --> %s", owner(), ref().field().getName(), t);
+        if(Logger.isTraceEnabled()) Logger.trace(" AssociativeList.link %s %s --> %s", owner(), ref().field().getName(), t);
         link(t, -1);
     }
 
@@ -35,7 +37,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
     public void unlink(T t) {
-//        Logger.info(" AssociativeList.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
+        if(Logger.isTraceEnabled()) Logger.trace(" AssociativeList.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
         unlink(t, -1);
     }
 
@@ -86,8 +88,13 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     public void add(int index, T t) {
-        assert(indexOf(t) < 0);
         assert(t!=null);
+        if(index == indexOf(t)) {
+            // sanity check for higher level modules unaware of this
+            // unfortunately O(n) but required
+            // TODO think about hashing if over a certain size or annotation to skip this check
+            return;
+        }
         if(!ref().opposite().isCollection()) {
             ref().opposite().set(t, null);
         }
@@ -97,6 +104,12 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
     public boolean add(T t) {
+        if(indexOf(t)>=0) {
+            // sanity check for higher level modules unaware of this
+            // unfortunately O(n) but required
+            // TODO think about hashing if over a certain size or annotation to skip this check
+            return false;
+        }
         int size = delegate().size();
         assert(t!=null);
         if(!ref().opposite().isCollection()) {

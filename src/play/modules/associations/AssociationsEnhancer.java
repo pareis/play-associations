@@ -86,7 +86,7 @@ public class AssociationsEnhancer extends Enhancer {
                     if(ap==null) {
                         continue;
                     }
-                    Logger.debug(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
+                    if(Logger.isTraceEnabled()) Logger.trace(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
 
 
                     String propertyName = ctField.getName().substring(0, 1).toUpperCase() + (ctField.getName().length()>1 ?ctField.getName().substring(1) : "");
@@ -98,7 +98,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtMethod ctMethodSet = ctClass.getDeclaredMethod(setter);
                         if(!ap.many) {
                             ctClass.removeMethod(ctMethodSet);
-                            Logger.debug("removed current " + ctMethodSet);
+                            if(Logger.isTraceEnabled()) Logger.trace("removed current " + ctMethodSet);
                         }
                     } catch (NotFoundException noSetter) {
                     }
@@ -118,7 +118,7 @@ public class AssociationsEnhancer extends Enhancer {
                             + ap.oppField.getDeclaringClass().getName() + ".class, "
                             + qq(ap.oppField.getName()) + ");", ctClass);
                     ctClass.addField(reference);
-                    Logger.debug("%s added field %s", ctClass.getName(), reference);
+                    if(Logger.isTraceEnabled()) Logger.trace("%s added field %s", ctClass.getName(), reference);
 
                     if(ap.many) {
 
@@ -126,7 +126,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtField delegate = CtField.make("public transient " + collectionClass.getName() + " _delegate_" + ctField.getName()
                                 + " = new " + collectionClass.getName() + "(_ref_" + ctField.getName() + ", " + "this);", ctClass);
                         ctClass.addField(delegate);
-                        Logger.debug("%s added field %s", ctClass.getName(), delegate);
+                        if(Logger.isTraceEnabled()) Logger.trace("%s added field %s", ctClass.getName(), delegate);
 
                         CtMethod ctMethodGet = CtMethod.make("public " + ctField.getType().getName() + " " + getter + "() { return this." + " _delegate_" + ctField.getName() + "; }", ctClass);
                         ctClass.addMethod(ctMethodGet);
@@ -157,12 +157,12 @@ public class AssociationsEnhancer extends Enhancer {
         try {
             AssociationProperty ap = scan(ctField);
             if(ap!=null) {
-//            Logger.info("1 %s", ap);
+//            Logger.trace("1 %s", ap);
                 if(ap.oppField==null) {
-//                Logger.info("2.1 %s", ap);
+//                Logger.trace("2.1 %s", ap);
                     for(CtField ofield : ap.type.getDeclaredFields()) {
                         AssociationProperty oppp = scan(ofield);
-//                    Logger.info("2.1.1 %s %s", ofield, oppp);
+//                    Logger.trace("2.1.1 %s %s", ofield, oppp);
                         if(oppp!=null && oppp.oppField == ctField) {
                             ap.opposite = oppp;
                             ap.oppField = oppp.field;
@@ -171,9 +171,9 @@ public class AssociationsEnhancer extends Enhancer {
                         }
                     }
                 } else {
-//                Logger.info("2.2 %s", ap);
+//                Logger.trace("2.2 %s", ap);
                     AssociationProperty oppp = scan(ap.oppField);
-//                Logger.info("2.2.1 %s %s", ap.oppField, oppp);
+//                Logger.trace("2.2.1 %s %s", ap.oppField, oppp);
                     if(oppp!=null && oppp.type == ctField.getDeclaringClass()) {
                         ap.opposite = oppp;
                         oppp.opposite = ap;
@@ -202,18 +202,18 @@ public class AssociationsEnhancer extends Enhancer {
 
                 if(ap.many) {
                     ap.list = "List".equals(m.group(1));
-//                    Logger.info("plain sig" + ctField.getSignature());
+//                    Logger.trace("plain sig" + ctField.getSignature());
                     FieldInfo fi = ctField.getFieldInfo();
                     AttributeInfo signature = fi.getAttribute("Signature");
                     if(signature!=null) {
                         int index = new BigInteger(signature.get()).intValue();
                         String info = signature.getConstPool().getUtf8Info(index);
-//                        Logger.info("deep sig @%s = %s", index, info);
+//                        Logger.trace("deep sig @%s = %s", index, info);
                         Matcher m2 = INFO_REGEX.matcher(info);
                         if(m2.matches()) {
                             String type = m2.group(2).replaceAll("/", ".");
                             CtClass targetClass = ctField.getDeclaringClass().getClassPool().get(type);
-//                            Logger.info("type is %s of %s", m.group(1), targetClass);
+//                            Logger.trace("type is %s of %s", m.group(1), targetClass);
                             ap.type = targetClass;
                         }
                     }

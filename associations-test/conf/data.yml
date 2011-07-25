@@ -1,0 +1,21 @@
+Author(gamma):
+  name: Erich Gamma
+
+Author(helm):
+  name: Richard Helm
+
+Author(johnson):
+  name: Ralph Johnson
+
+Author(vlissides):
+  name: John Vlissides
+
+Book(gof):
+  title: Design Patterns
+  authors: gamma, helm
+
+Publisher(wiley):
+  name: Wiley & Sons
+
+Publisher(aw):
+  name: Addison Wesley

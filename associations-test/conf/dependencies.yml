@@ -2,6 +2,7 @@
 
 require:
     - play
+    - play -> crud
     - play -> associations 0.1
 
 

@@ -1,5 +1,7 @@
 package play.modules.associations;
 
+import play.Logger;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
     }
 
     public void link(T t) {
-//        Logger.info(" AssociativeList.link %s %s --> %s", owner(), ref().field().getName(), t);
+        if(Logger.isTraceEnabled()) Logger.trace(" AssociativeSet.link %s %s --> %s", owner(), ref().field().getName(), t);
         delegate().add(t);
     }
 
@@ -24,7 +26,7 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
 
     public void unlink(T t) {
-//        Logger.info(" AssociativeList.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
+        if(Logger.isTraceEnabled()) Logger.trace(" AssociativeSet.unlink %s %s -x- %s", owner(), ref().field().getName(), t);
         delegate().remove(t);
     }
 

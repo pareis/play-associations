@@ -1,6 +1,8 @@
 package play.modules.associations;
 
 
+import play.Logger;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +55,7 @@ public class Reference {
             try {
                 Field oppRefField = oppClazz.getField("_ref_" + oppFieldName);
                 this.opposite = (Reference) oppRefField.get(null);
-//                Logger.info("%s.%s opposite is %s", clazz.getName(), fieldName, oppRefField);
+                if(Logger.isTraceEnabled()) Logger.trace("%s.%s opposite is %s", clazz.getName(), fieldName, oppRefField);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
@@ -80,7 +82,7 @@ public class Reference {
     public void link(Object owner, Object target) {
         
         if(isCollection()) {
-//            Logger.info(" link (coll) %s: %s --> %s", owner, fieldName, target);
+            if(Logger.isTraceEnabled()) Logger.trace(" link (coll) %s: %s --> %s", owner, fieldName, target);
             try {
                 Collection<?> raw = (Collection)field().get(owner);
                 if(raw==null) {
@@ -111,7 +113,7 @@ public class Reference {
                 throw new RuntimeException(e);
             }
         } else {
-//            Logger.info(" link (single) %s: %s --> %s", owner, fieldName, target);
+            if(Logger.isTraceEnabled()) Logger.trace(" link (single) %s: %s --> %s", owner, fieldName, target);
             try {
                 field().set(owner, target);
             } catch (IllegalAccessException e) {
@@ -127,7 +129,7 @@ public class Reference {
      */
     public void unlink(Object owner, Object target) {
         if(isCollection()) {
-//            Logger.info(" unlink (coll) %s: %s -x- %s", owner, fieldName, target);
+            if(Logger.isTraceEnabled()) Logger.trace(" unlink (coll) %s: %s -x- %s", owner, fieldName, target);
             try {
                 AssociativeCollection del = (AssociativeCollection)delegate().get(owner);
                 if(del!=null) {
@@ -137,7 +139,7 @@ public class Reference {
                 throw new RuntimeException(e);
             }
         } else {
-//            Logger.info(" unlink (single) %s: %s -x- %s", owner, fieldName, target);
+            if(Logger.isTraceEnabled()) Logger.trace(" unlink (single) %s: %s -x- %s", owner, fieldName, target);
             try {
                 field().set(owner, null);
             } catch (IllegalAccessException e) {
@@ -155,7 +157,7 @@ public class Reference {
      */
     public void set(Object owner, Object target) {
             Object current = current(owner);
-//            Logger.info("%s set: '%s': %s => %s)", owner, fieldName, current, target);
+            if(Logger.isTraceEnabled()) Logger.trace("%s set: '%s': %s => %s)", owner, fieldName, current, target);
             if(current != target) {
                 if(current!=null) {
                     if(target!=null && !opposite().isCollection()) {
