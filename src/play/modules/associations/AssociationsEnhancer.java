@@ -63,9 +63,6 @@ public class AssociationsEnhancer extends Enhancer {
             return;
         }
 
-        String entityName = ctClass.getName();
-
-
         CtField[] declaredFields = ctClass.getDeclaredFields();
         List<AssociationProperty> declared = new ArrayList<AssociationProperty>(declaredFields.length);
 
@@ -86,7 +83,7 @@ public class AssociationsEnhancer extends Enhancer {
                     if(ap==null) {
                         continue;
                     }
-                    if(Logger.isTraceEnabled()) Logger.trace(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
+                    if(Logger.isDebugEnabled()) Logger.debug(ENHANCER_NAME + " found bi-directional association %s <-> %s", ap, ap.opposite);
 
 
                     String propertyName = ctField.getName().substring(0, 1).toUpperCase() + (ctField.getName().length()>1 ?ctField.getName().substring(1) : "");
@@ -107,7 +104,7 @@ public class AssociationsEnhancer extends Enhancer {
                         CtMethod ctMethodGet = ctClass.getDeclaredMethod(getter);
                         if(ap.many) {
                             ctClass.removeMethod(ctMethodGet);
-                            Logger.debug("removed current " + ctMethodGet);
+                            if(Logger.isTraceEnabled()) Logger.trace("removed current " + ctMethodGet);
                         }
                     } catch (NotFoundException noGetter) {
                     }
@@ -123,7 +120,7 @@ public class AssociationsEnhancer extends Enhancer {
                     if(ap.many) {
 
                         Class<? extends AbstractAssociativeCollection> collectionClass = ap.list ? AssociativeList.class : AssociativeSet.class;
-                        CtField delegate = CtField.make("public transient " + collectionClass.getName() + " _delegate_" + ctField.getName()
+                        CtField delegate = CtField.make("public final transient " + collectionClass.getName() + " _delegate_" + ctField.getName()
                                 + " = new " + collectionClass.getName() + "(_ref_" + ctField.getName() + ", " + "this);", ctClass);
                         ctClass.addField(delegate);
                         if(Logger.isTraceEnabled()) Logger.trace("%s added field %s", ctClass.getName(), delegate);

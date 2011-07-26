@@ -12,10 +12,12 @@ Author(vlissides):
 
 Book(gof):
   title: Design Patterns
-  authors: gamma, helm
+  authors: [gamma, helm]
 
 Publisher(wiley):
   name: Wiley & Sons
 
 Publisher(aw):
   name: Addison Wesley
+
+

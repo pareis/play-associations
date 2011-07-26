@@ -42,10 +42,10 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     public void unlink(T t, int position) {
-        if(position<0) {
+        if(position < 0) {
             delegate().remove(t);
         } else {
-            if(position< delegate().size() && delegate().get(position)==t) {
+            if(position < delegate().size() && delegate().get(position)==t) {
                 delegate().remove(position);
             } else {
                 delegate().remove(t);
@@ -88,8 +88,8 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
     }
 
     public void add(int index, T t) {
-        assert(t!=null);
-        if(index == indexOf(t)) {
+        if(t==null) throw new IllegalArgumentException("null is not allowed in associations");
+        if(index>=0 && index == indexOf(t)) {
             // sanity check for higher level modules unaware of this
             // unfortunately O(n) but required
             // TODO think about hashing if over a certain size or annotation to skip this check
@@ -104,6 +104,7 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
     public boolean add(T t) {
+        if(t==null) throw new IllegalArgumentException("null is not allowed in associations");
         if(indexOf(t)>=0) {
             // sanity check for higher level modules unaware of this
             // unfortunately O(n) but required
@@ -111,7 +112,6 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
             return false;
         }
         int size = delegate().size();
-        assert(t!=null);
         if(!ref().opposite().isCollection()) {
             ref().opposite().set(t, null);
         }
@@ -125,17 +125,25 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
 
     public boolean addAll(Collection<? extends T> collection) {
-        for (java.util.Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
-            add(i.next());
+        int sz = size();
+        for (java.util.Iterator<? extends T> i = new ArrayList(collection).iterator(); i.hasNext();) {
+            T t = i.next();
+            if(t!=null) {
+                add(t);
+            }
         }
-        return collection.size() > 0;
+        return size()!=sz;
     }
 
     public boolean addAll(int index, Collection<? extends T> collection) {
-        for (java.util.Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
-            add(index++, i.next());
+        int sz = size();
+        for (java.util.Iterator<? extends T> i = new ArrayList(collection).iterator(); i.hasNext();) {
+            T t = i.next();
+            if(t!=null) {
+                add(index++, t);
+            }
         }
-        return collection.size() > 0;
+        return size()!=sz;
     }
 
     public void clear() {
@@ -302,13 +310,12 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
     @SuppressWarnings("unchecked")
     public boolean remove(Object object) {
-        List<T> del = delegate();
-        int size = del.size();
+        if(object==null) return false;
         int index = indexOf(object);
         if(index>=0) {
-            unlink((T)object, index);
-            unlinkOpposite((T)object);
-            return del.size()!=size;
+            int sz = size();
+            remove(index);
+            return size() != sz;
         }
 
         return false;
@@ -316,8 +323,8 @@ public class AssociativeList<T> extends AbstractAssociativeCollection<T> impleme
 
     public boolean removeAll(Collection<?> collection) {
         boolean changed = false;
-        for (java.util.Iterator<?> i = collection.iterator(); i.hasNext();) {
-            changed = changed || remove(i.next());
+        for (java.util.Iterator<?> i = new ArrayList(collection).iterator(); i.hasNext();) {
+            changed = remove(i.next()) || changed;
         }
         return changed;
     }

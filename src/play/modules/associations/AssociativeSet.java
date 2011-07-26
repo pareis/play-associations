@@ -1,7 +1,9 @@
 package play.modules.associations;
 
+import org.apache.commons.collections.iterators.ArrayListIterator;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,14 +44,14 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
 
     public boolean add(T t) {
+        if(t==null) throw new IllegalArgumentException("null is not allowed in associations");
         int size = delegate().size();
-        assert(t!=null);
         if(!ref().opposite().isCollection()) {
             ref().opposite().set(t, null);
         }
         link(t);
         linkOpposite(t);
-        return size!= delegate().size();
+        return size!=size();
     }
 
 
@@ -57,8 +59,11 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
 
     public boolean addAll(Collection<? extends T> collection) {
-        for (Iterator<? extends T> i = collection.iterator(); i.hasNext();) {
-            add(i.next());
+        for (Iterator<? extends T> i = new ArrayList(collection).iterator(); i.hasNext();) {
+            T t = i.next();
+            if(t!=null) {
+                add(t);
+            }
         }
         return collection.size() > 0;
     }
@@ -163,8 +168,8 @@ public class AssociativeSet<T> extends AbstractAssociativeCollection<T> implemen
 
     public boolean removeAll(Collection<?> collection) {
         boolean changed = false;
-        for (Iterator<?> i = collection.iterator(); i.hasNext();) {
-            changed = changed || remove(i.next());
+        for (Iterator<?> i = new ArrayList(collection).iterator(); i.hasNext();) {
+            changed = remove(i.next()) || changed;
         }
         return changed;
     }

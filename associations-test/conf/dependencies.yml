@@ -3,7 +3,7 @@
 require:
     - play
     - play -> crud
-    - play -> associations 0.1
+    - play -> associations 1.0
 
 
 repositories:
