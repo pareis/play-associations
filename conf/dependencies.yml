@@ -1,4 +1,4 @@
-self: play -> associations 1.0
+self: play -> associations 1.0.1
 
 require:
     - play

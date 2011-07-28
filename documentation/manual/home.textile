@@ -1,0 +1,203 @@
+h1. Transparent bi-directional association management
+
+written by André Pareis
+
+The [associations] module can be added to any play application in order to reduce the amount of code necessary to manage both sides of JPA's bi-directional associations. 
+
+
+
+h2. Motivation
+
+p. Coding bi-directional associations is error prone and tedious. You have to take care about established associations when you establish a new one with one of the already associated objects.
+
+p. If you imagine a model like this:
+
+bc.. @Entity
+public class Forum {
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="forum")
+    public List<Post> posts;
+}
+
+@Entity
+public class Post {
+    @ManyToOne
+    public Forum forum;
+}
+p. Then, if you want to move a post from one forum to another you would need to write code like:
+
+bc.. Post post = ...
+Forum forum2 = new Forum();
+
+// move it
+post.forum.posts.remove(post);
+forum2.posts.add(post);
+post.forum = forum2;
+p. i.e., you need to break the original association on both sides and you need to establish a new association on both sides. Potentially this results in 4 operations to be executed, which can be reduced to 3 as the post can change its forum in a single operation. But you always need to be aware about all the things involved in order to not break the system, which is especially true with JPA/Hibernate relying on the correctness of your object structures.
+
+p. If you have instead the associations module enabled, it will handle all 4 parts of this complex operation as soon as you trigger the change from any of the associated objects. The above code can then be reduced to this:
+
+bc.. Post post = ...
+Forum forum2 = new Forum();
+
+// move it
+forum2.posts.add(post);
+p. so the 3 lines necessary without the module are reduced into 1 single line of code with the module.
+
+
+
+
+h2. Installation & Usage
+
+h3. Installation
+
+Follows standard play module installation procedure:
+
+bc. play install associations
+
+Add the following line to your dependencies.yml _replacing 1.0 with desired version_:
+
+bc. require:
+    - play -> associations 1.0
+
+run
+
+bc. play dependencies --sync
+
+h3. Usage
+
+The module will be automatically effective on all _correctly_ defined JPA associations with a "mappedBy" attribute on either side, including @OneToOne, @OneToMany, @ManyToOne, @ManyToMany.
+
+There are no steps to be taken at coding level. The presence of the module is sufficient. Play should give you an indication at application startup about the availability of the module.
+
+
+h4. Debugging and Tracing
+
+If you set the log level to DEBUG that you will see reports about all identified associations by the module. If something doesn't show up here, then it is not managed by the module. Reason might be that something is misspelled, probably "mappedBy".
+
+If you set log level to TRACE, then the module will produce very detailed reports about all association changes.  
+
+
+h2. Other Benefits, Considerations and Restrictions
+
+h3. Collection Auto-Initializer
+
+You can declare your collection properties without initializing the value. Had you written before:
+
+bc.. @OneToMany(mappedBy="parent")
+List<Target> children = new ArrayList<Target>();
+
+object.children.add(...);
+p. you can now reduce this to the pure declaration of the property:
+
+bc.. @OneToMany(mappedBy="parent")
+List<Target> children;
+
+object.children.add(...);
+p. and it will not throw a NullPointerException if @object.children@ has never been initialized. The [associations] module will initialize @null@ properties with an appropriate collection (@List => ArrayList, Set => HashSet@). If these types suit your needs you can leave the initialization to the module, otherwise initialize them yourself. _But keep in mind that it does so only on the bi-directional associations._
+
+
+h3. Collection Types
+
+@OneToMany or @ManyToMany must be declared using any of these collection types:
+
+bc. java.util.List<T>
+java.util.Set<T>
+
+_i.e., the generics type argument must be present and only the standard Java collection interfaces are supported_
+
+h3. Performance
+
+p. For operational safety and compatibility with CRUD and other modules, the association changes are implemented with some sanity checks. Things that are made impossible include
+
+* Inserting @null@ into collections
+* Inserting duplicates into collections
+
+Attempts to do any of these are simply ignored. However, the latter check comes at a cost. The sanity check is performed using an indexOf() operation, which has O(n) complexity. So, if you have a List of potentially large size, then this become an issue. For Set type properties situation is a little better as the underlying HashSet implements the check using contains() which is closer to O(1) than O(n).
+
+_There would be solutions to this thinkable, e.g., annotations to the control these sanity checks but at present, none of that is implemented and it will be implemented only if there is serious need for it._
+
+
+
+h3. Dependency
+
+You should be aware that if you base your coding on the features of this module, then a sudden absence of the module will break your system. This is due to the fact that the single line of code that initiated a complex change before will then only effect that very single property, not the other participants.
+
+If you want to get rid of the [associations] module at a later stage you would need to add the missing statements to your code to keep up with the semantics.   
+
+
+h3. Compatibility
+
+The module has been briefly testet in conjunction with the CRUD module. Tested have been @OneToMany, @OneToOne, @ManyToOne, @ManyToMany, all without problems. Except that I think that there is no such thing as @ManyToMany in CRUD?
+
+
+h2. How it works
+
+Here are some of the technical details for the interested. 
+
+h3. Big Picture
+
+The key technology to achieve the module's functionality is to inject bi-directionality aware collection classes into the getter of collection properties. Whenever you add to or remove from such a collection, then this collection is responsible to keep the other side of the association in sync with the current change.
+
+The injected collection delegates content representation to a physical backend collection that is the collection that you or Hibernate uses (the one without the module in place). So, whenever you access a collection property via its getter, not that physical holder collection is returned but an AssociativeCollection having the physical collection as delegate and being aware of "an other side". This change in behaviour is achieved through Play plugin code enhancement.
+
+h3. Meta level
+
+The module's code enhancer scans every loaded class for the presence of an association property. If it is identified as bi-directional, a meta level object is injected into the class.
+
+If you have a class like this:
+
+bc.. @Entity
+public class Foo {
+    @OneToMany(mappedBy="foo")
+    public List<Bar> bars;
+}
+
+@Entity
+public class Bar {
+    @ManyToOne
+    public Foo foo;
+}
+p. Both classes are enhanced with static attributes describing the JPA properties. The enhanced classes become:
+
+bc.. @Entity
+public class Foo {
+    @OneToMany(mappedBy="foo")
+    public List<Bar> bars;
+    public static Reference _ref_bars = new Reference(Foo.class, "bars", Bar.class, "foo");
+}
+
+@Entity
+public class Bar {
+    @ManyToOne
+    public Foo foo;
+    public static Reference _ref_foo = new Reference(Bar.class, "foo", Foo.class, "bars");
+}
+p. So, both Reference objects are kind of aware of each other. The Reference class contains all the necessay functions to resolve the physical Java field and the opposite Reference at runtime. These implementation details are of course cached at runtime. 
+
+
+h3. Property access
+
+For single valued properties (i.e., the *ToOne ref) the standard setter method for that property is replaced by code which delegates to the @Reference@ object to set the value. The Reference object is aware of the cardinality of the property and invokes the necessary operations on all participants.
+
+For many valued properties, the standard getter method for the property is replaced by a getter which returns an AssociativeCollection which in turn has a reference to the owner object and the Reference it implements. This collection implements the details of this side of the association plus delegates all necessary operations (unlink/link) regarding the other side of the association to the meta level Reference object of the other side of the association.
+
+It's as simple as that ;)
+
+
+h2. Future Improvements
+
+In the future, the following improvements would make sense
+
+* Better control over sanity checks in collection properties (via annotation)
+* Implement Map type associations
+* Replace reflection based field access with fully generated code
+
+_Very unlikely:_
+* Use cascade information on @OneToMay or @OneToOne to detect compositions (in the UML sense) and automatically unlink from parent across different composition associations (_very advanced, complex and supposedly rarely used_)
+
+
+
+h2. Further Information
+
+Source code: "https://github.com/pareis/play-associations":https://github.com/pareis/play-associations
+Issue tracking: "https://github.com/pareis/play-associations/issues":https://github.com/pareis/play-associations/issues

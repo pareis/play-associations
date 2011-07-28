@@ -156,23 +156,22 @@ public class Reference {
      * @param target
      */
     public void set(Object owner, Object target) {
-            Object current = current(owner);
-            if(Logger.isTraceEnabled()) Logger.trace("%s set: '%s': %s => %s)", owner, fieldName, current, target);
-            if(current != target) {
-                if(current!=null) {
-                    if(target!=null && !opposite().isCollection()) {
-                        // break the association of the target with its current counterpart
-                        opposite().set(target, null);
-                    }
-                    opposite().unlink(current, owner);
-                    current = null;
+        Object current = current(owner);
+        if(Logger.isTraceEnabled()) Logger.trace("%s set: '%s': %s => %s)", owner, fieldName, current, target);
+        if(current != target) {
+            if(current!=null) {
+                if(target!=null && !opposite().isCollection()) {
+                    // break the association of the target with its current counterpart
+                    opposite().set(target, null);
                 }
-                if(target != null) {
-                    opposite().link(target, owner);
-                }
-                link(owner, target);
+                opposite().unlink(current, owner);
+                current = null;
             }
-
+            if(target != null) {
+                opposite().link(target, owner);
+            }
+            link(owner, target);
+        }
     }
 
 
